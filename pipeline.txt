@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+      
+      stages {
+          stage ('git checkout'){
+              
+              steps{
+                  script{
+                      git 'https://github.com/Maddalarajesh/hello-world.git'
+                  } 
+                  
+              }
+          }
+ stage('unit Testing'){
+     steps{
+         script{
+             sh 'mvn test'
+         }
+     }
+ }
+ stage('Integration testing'){
+     steps{
+         
+         script{
+             
+             sh 'mvn verify -DskipUnitTest'
+         }                                                                
+     }
+ }
+ 
+ stage('Maven build'){
+     steps{
+         script{
+             
+             sh 'mvn clean install'
+            
+         }
+     }
+ }
+           stage('deploy'){
+            
+            steps{
+                  sshagent(['ubuntu']) {
+    // some block
+
+                     sh 'scp -o StrictHostKeyChecking=no webapp/target/webapp-2.war ubuntu@3.17.28.36:/home/ubuntu/apache-tomcat-10.0.7/webapps'
+      }
+            }
+}
+      }
+}
